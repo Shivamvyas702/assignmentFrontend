@@ -31,7 +31,7 @@ export default function Profile() {
                 <input type="file" {...register('profileImage')} onChange={e => setPreview(URL.createObjectURL(e.target.files[0]))} className="mb-2"/>
                 
                 {preview && <img src={preview} width="100" className="mb-2 rounded" />}
-                {user.profileImage && !preview && <img src={`http://localhost:5000/uploads/${user.profileImage}`} width="100" className="mb-2 rounded"/>}
+                {user.profileImage && !preview && <img src={`https://assignmentbackend-production-c9be.up.railway.app/uploads/${user.profileImage}`} width="100" className="mb-2 rounded"/>}
 
                 <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Update Profile</button>
             </form>
