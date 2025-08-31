@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import React, { useContext, useEffect,useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Register from './components/Register';
 import Login from './components/LoginPage';
 import Profile from './components/Profile';
@@ -7,28 +7,50 @@ import UsersList from './components/UserList';
 import Navbar from './components/Navbar';
 import VerifyEmail from './components/VerifyEmail';
 import { AuthContext, AuthProvider } from './auth/AuthContext';
+import ResetPassword from './components/ResetPassword';
+
 
 function AppRoutes() {
   const { isAuthenticated } = useContext(AuthContext);
   const location = useLocation();
+  const [verifiedMsg, setVerifiedMsg] = useState('');
+  const navigate = useNavigate();
 
-  // Show alert after email verification
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('verified')) {
-      alert('Email verified! You can now login.');
+    const verified = params.get('verified');
+
+    if (verified === 'true') {
+      setVerifiedMsg('Email verified! You can now login.');
+    } else if (verified === 'failed') {
+      setVerifiedMsg('Invalid or expired verification link.');
     }
-  }, [location]);
+
+    // Remove query params from URL after reading
+    if (verified) {
+      params.delete('verified');
+      navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
+    }
+  }, [location, navigate]);
 
   return (
     <>
+      {verifiedMsg && (
+        <div className="p-4 mb-4 text-green-800 bg-green-200 rounded">
+          {verifiedMsg}
+        </div>
+      )}
+
       {isAuthenticated && <Navbar />}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={!isAuthenticated ? <Register /> : <Navigate to="/profile" />} />
         <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/profile" />} />
         <Route path="/verify-email/:token" element={<VerifyEmail />} />
-
+        <Route
+          path="/reset-password/:token?"
+          element={<ResetPassword />}
+        />
         {/* Protected Routes */}
         <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
         <Route path="/users" element={isAuthenticated ? <UsersList /> : <Navigate to="/login" />} />
