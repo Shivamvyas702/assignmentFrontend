@@ -13,10 +13,13 @@ export default function Login() {
   const { login } = useContext(AuthContext);
   const location = useLocation();
 
+ 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('verified')) {
+    if (params.get('verified') === 'true') {
       alert('Email verified! You can now log in.');
+    } else if (params.get('verified') === 'failed') {
+      alert('Invalid or expired verification link.');
     }
   }, [location]);
 
