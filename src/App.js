@@ -16,30 +16,34 @@ function AppRoutes() {
   const [verifiedMsg, setVerifiedMsg] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const verified = params.get('verified');
+ useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const verified = params.get('verified');
 
-    if (verified === 'true') {
-      setVerifiedMsg('Email verified! You can now login.');
-    } else if (verified === 'failed') {
-      setVerifiedMsg('Invalid or expired verification link.');
-    }
+  if (verified === 'true') {
+    setVerifiedMsg('Email verified! You can now login.');
+  } else if (verified === 'failed') {
+    setVerifiedMsg('Invalid or expired verification link.');
+  }
 
-    // Remove query params from URL after reading
-    if (verified) {
-      params.delete('verified');
-      navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
-    }
-  }, [location, navigate]);
+  // Remove query params from URL after reading
+  if (verified) {
+    params.delete('verified');
+    navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
+  }
+
+  if (verified) {
+    const timer = setTimeout(() => {
+      setVerifiedMsg('');
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }
+}, [location, navigate]);
+
 
   return (
     <>
-      {verifiedMsg && (
-        <div className="p-4 mb-4 text-green-800 bg-green-200 rounded">
-          {verifiedMsg}
-        </div>
-      )}
 
       {isAuthenticated && <Navbar />}
       <Routes>
