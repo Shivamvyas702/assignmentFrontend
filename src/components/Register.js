@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import API from '../api/api';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [preview, setPreview] = useState(null);
+    const navigate = useNavigate();
 
     const onSubmit = async (data) => {
         const formData = new FormData();
@@ -15,9 +17,10 @@ export default function Register() {
 
         try {
             const res = await API.post('/auth/register', formData);
-            alert(res.data.message);
+            alert(res.data?.message || 'Registration successful. Check your email to verify.');
+            navigate('/login'); // redirect to login after registration
         } catch (err) {
-            alert(err.response.data.message);
+            alert(err.response?.data?.message || 'Registration failed');
         }
     };
 

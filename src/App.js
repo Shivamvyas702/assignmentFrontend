@@ -1,42 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Register from './components/Register';
+import Login from './components/LoginPage';
 import Profile from './components/Profile';
 import UsersList from './components/UserList';
 import Navbar from './components/Navbar';
-import Login from './components/LoginPage';
+import VerifyEmail from './components/VerifyEmail';
+import { AuthContext, AuthProvider } from './auth/AuthContext';
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+function AppRoutes() {
+  const { isAuthenticated } = useContext(AuthContext);
+  const location = useLocation();
 
+  // Show alert after email verification
   useEffect(() => {
-    // Check localStorage for token
-    const token = localStorage.getItem('accessToken');
-    setIsAuthenticated(!!token);
-  }, []);
+    const params = new URLSearchParams(location.search);
+    if (params.get('verified')) {
+      alert('Email verified! You can now login.');
+    }
+  }, [location]);
 
   return (
-    <BrowserRouter>
+    <>
       {isAuthenticated && <Navbar />}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={!isAuthenticated ? <Register /> : <Navigate to="/profile" />} />
         <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/profile" />} />
+        <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
         {/* Protected Routes */}
-        <Route 
-          path="/profile" 
-          element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
-        />
-        <Route 
-          path="/users" 
-          element={isAuthenticated ? <UsersList /> : <Navigate to="/login" />} 
-        />
+        <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/users" element={isAuthenticated ? <UsersList /> : <Navigate to="/login" />} />
 
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-    </BrowserRouter>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
