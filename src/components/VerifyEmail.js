@@ -6,18 +6,19 @@ export default function VerifyEmail() {
   const { token } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const verify = async () => {
-      try {
-        await API.get(`/auth/verify-email/${token}`);
-        navigate('/login?verified=true');
-      } catch {
-        alert('Invalid or expired verification link');
-        navigate('/login');
-      }
-    };
-    verify();
-  }, [token, navigate]);
+useEffect(() => {
+  const verify = async () => {
+    try {
+      await API.get(`/auth/verify-email/${token}`);
+      navigate('/login?verified=true');
+    } catch {
+      alert('Invalid or expired verification link');
+      navigate('/login');
+    }
+  };
+  verify();
+}, [token, navigate]);
+
 
   return <div>Verifying email...</div>;
 }
