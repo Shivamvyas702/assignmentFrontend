@@ -9,7 +9,7 @@ export default function VerifyEmail() {
   useEffect(() => {
     const verify = async () => {
       try {
-        await API.get(`/auth/verify/${token}`);
+        await API.get(`/auth/verify-email/${token}`);
         navigate('/login?verified=true');
       } catch {
         alert('Invalid or expired verification link');
